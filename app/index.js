@@ -1,35 +1,22 @@
-import React, { useState } from 'react';
-import { View, Text, Button } from 'react-native';
-import { Audio } from 'expo-av';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, Button, StyleSheet } from 'react-native';
+import LikedSongsScreen from './LikedSongsScreen';
 
 const Home = () => {
 
-    const [sound, setSound] = useState();
+  return (
+    <View style={styles.container}>
+      <LikedSongsScreen />
+    </View>
+  );
+};
 
-    async function playSound() {
-        const { sound } = await Audio.Sound.createAsync(
-        require('./assets/one.mp3'),
-          { shouldPlay: true }
-        );
-        setSound(sound);
-    }
-    
-    function pauseSound() {
-        sound.pauseAsync();
-    }
-    
-    function stopSound() {
-        sound.stopAsync();
-    }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    marginTop: 40,
+  },
+});
 
-    return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Music Player App</Text>
-        <Button title="Play" onPress={playSound} />
-        <Button title="Pause" onPress={pauseSound} />
-        <Button title="Stop" onPress={stopSound} />
-      </View>
-  )
-}
-
-export default Home
+export default Home;
