@@ -155,7 +155,8 @@ const playRandomSong = async () => {
 
     // Log details of the selected track
     console.log('Random Track Title:', randomPlayableTrack.track.name);
-    console.log('Preview URL:', randomPlayableTrack.track.preview_url);
+    console.log('Random Author Title:', randomPlayableTrack.track.artists[0].name);
+    // console.log('Preview URL:', randomPlayableTrack.track.preview_url);
 
     // Update the UI with track information
     updateTrackInfo(randomPlayableTrack.track.name, randomPlayableTrack.track.artists[0].name);
@@ -194,18 +195,6 @@ const playRandomSong = async () => {
         <Pressable onPress={handleAuth}>
           <Text>Authenticate</Text>
         </Pressable>
-          {/* Add a button to play a random song */}
-          <Pressable
-            style={({ pressed }) => ({
-              backgroundColor: pressed ? '#394867' : '#506C9A',
-              padding: 15,
-              borderRadius: 10,
-              alignItems: 'center',
-              marginTop: 20,
-            })}
-            onPress={playRandomSong}
-          ><Text style={{ color: 'white', fontSize: 18 }}>Play Random Song</Text>
-          </Pressable>
           <Pressable
             style={{
               flexDirection: 'row',
@@ -217,7 +206,7 @@ const playRandomSong = async () => {
             <Text
               style={{ fontSize: 14, fontWeight: "bold", color: "white" }}
             >
-              track name
+              {trackInfo.name}
             </Text>
             <Entypo name="dots-three-vertical" size={24} color="white" />
           </Pressable>
@@ -240,10 +229,10 @@ const playRandomSong = async () => {
                 <Text
                   style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
                 >
-                  track name
+                  {trackInfo.name}
                 </Text>
                 <Text style={{ color: "#D3D3D3", marginTop: 4 }}>
-                  author name
+                  {trackInfo.author}
                 </Text>
               </View>
 
@@ -290,22 +279,7 @@ const playRandomSong = async () => {
                   <Entypo name="controller-play" size={60} color="white" />
                 )}
               </Pressable>
-              {/* <Pressable >
-                  <AntDesign name="pausecircle" size={60} color="white" />
-              </Pressable>
-              <Pressable
-                style={{
-                  width: 60,
-                  height: 60,
-                  borderRadius: 30,
-                  backgroundColor: "white",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Entypo name="controller-play" size={26} color="black" />
-              </Pressable> */}
-              <Pressable >
+              <Pressable onPress={playRandomSong}>
                 <Ionicons name="play-skip-forward" size={30} color="white" />
               </Pressable>
               <Pressable>
