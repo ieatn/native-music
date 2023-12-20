@@ -20,6 +20,14 @@ const spotifyApi = new SpotifyWebApi({
 
 const LikedSongsScreen = () => {
   const [token, setToken] = useState("");
+  const [albumImage, setAlbumImage] = useState("")
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [sound, setSound] = useState();
+
+  const [trackInfo, setTrackInfo] = useState({
+    name: "Track Name",
+    author: "Author Name",
+  });
   const [request, response, promptAsync] = useAuthRequest(
     {
       responseType: ResponseType.Token,
@@ -76,11 +84,42 @@ const getUserPlaylists = async () => {
   }
 };
 
+
+const updateTrackInfo = (name, author) => {
+  setTrackInfo({
+    name,
+    author,
+  });
+};
+
 // Get a random element from an array
 const getRandomElement = (array) => {
   const randomIndex = Math.floor(Math.random() * array.length);
   return array[randomIndex];
 };
+
+const play = async () => {
+  if (sound) {
+    await sound.playAsync();
+    setIsPlaying(true);
+  }
+};
+
+const pause = async () => {
+  if (sound) {
+    await sound.pauseAsync();
+    setIsPlaying(false);
+  }
+};
+
+const playPauseToggle = () => {
+  if (isPlaying) {
+    pause();
+  } else {
+    play();
+  }
+};
+
 
 
 const playRandomSong = async () => {
@@ -118,35 +157,34 @@ const playRandomSong = async () => {
     console.log('Random Track Title:', randomPlayableTrack.track.name);
     console.log('Preview URL:', randomPlayableTrack.track.preview_url);
 
+    // Update the UI with track information
+    updateTrackInfo(randomPlayableTrack.track.name, randomPlayableTrack.track.artists[0].name);
+    // Update the album image
+    setAlbumImage(randomPlayableTrack.track.album.images[0].url);
+
     // Play the selected track
-    const { sound } = await Audio.Sound.createAsync(
+    const { sound: newSound } = await Audio.Sound.createAsync(
       { uri: randomPlayableTrack.track.preview_url },
       { shouldPlay: true }
     );
 
+    // Set the current sound
+    setSound(newSound);
+    setIsPlaying(true);
+
     // Wait for the track to finish playing
-    sound.setOnPlaybackStatusUpdate(status => {
+    newSound.setOnPlaybackStatusUpdate(status => {
       if (status.didJustFinish) {
-        sound.unloadAsync();
+        newSound.unloadAsync();
+        setIsPlaying(false);
+        // Clear track information when the song finishes
+        updateTrackInfo("Track Name", "Author Name");
       }
     });
   } catch (error) {
     console.error('Error playing random song:', error);
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   return (
@@ -189,7 +227,7 @@ const playRandomSong = async () => {
             {/* album image */}
             <Image
               style={{ width: "100%", height: 330, borderRadius: 4 }}
-              source={{ uri: "https://preview.redd.it/expanding-kanye-wests-graduation-album-cover-art-v0-gwrkilkqxd991.png?width=640&crop=smart&auto=webp&s=1d70a38c89d8d01b9f10dea42fbac0f8ef94e49a" }}
+              source={{ uri: albumImage }}
             />
             <View
               style={{
@@ -245,21 +283,28 @@ const playRandomSong = async () => {
               <Pressable >
                 <Ionicons name="play-skip-back" size={30} color="white" />
               </Pressable>
-              <Pressable >
+              <Pressable onPress={() => playPauseToggle()}>
+                {isPlaying ? (
+                  <Ionicons name="pause-circle" size={60} color="white" />
+                ) : (
+                  <Entypo name="controller-play" size={60} color="white" />
+                )}
+              </Pressable>
+              {/* <Pressable >
                   <AntDesign name="pausecircle" size={60} color="white" />
               </Pressable>
-                  <Pressable
-                    style={{
-                      width: 60,
-                      height: 60,
-                      borderRadius: 30,
-                      backgroundColor: "white",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Entypo name="controller-play" size={26} color="black" />
-                  </Pressable>
+              <Pressable
+                style={{
+                  width: 60,
+                  height: 60,
+                  borderRadius: 30,
+                  backgroundColor: "white",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Entypo name="controller-play" size={26} color="black" />
+              </Pressable> */}
               <Pressable >
                 <Ionicons name="play-skip-forward" size={30} color="white" />
               </Pressable>
